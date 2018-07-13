@@ -30,6 +30,8 @@ _g.g = (_g.graph = {
             LABEL_COLOR     = options.labelColor    || TICK_COLOR,
             LABEL_RANGE_X   = AXIS_RANGE_X[0]-AXIS_RANGE_X[1],
             LABEL_RANGE_Y   = AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1],
+            FUNC_WIDTH      = options.width         || 2,
+            FUNC_COLOR      = options.color         || "#f00",
             PADDING         = options.padding       || 0,
             PADDING_LEFT    = options.paddingLeft   || PADDING,
             PADDING_TOP     = options.paddingTop    || PADDING,
@@ -62,7 +64,7 @@ _g.g = (_g.graph = {
         ctx.textBaseline	= "top";
         ctx.fillStyle		= LABEL_COLOR;
         //	Draw x-axis Ticks
-        var xTick = i => {
+        var xTick = i=>{
             //  Draw tick
             ctx.beginPath();
             let x = ~~((width/TICK_COUNT_X)*i)+left+~~(width*ORIGIN.x);
@@ -81,7 +83,7 @@ _g.g = (_g.graph = {
         //	Draw y-axis Ticks
         ctx.textAlign		= "right";
         ctx.textBaseline	= "middle";
-        var yTick = i => {
+        var yTick = i=>{
             // Draw tick
             ctx.beginPath();
             let y = ~~((height/TICK_COUNT_Y)*i)+top+~~(height*ORIGIN.y);
@@ -97,7 +99,19 @@ _g.g = (_g.graph = {
         }
         for(let i=0;i<=TICK_COUNT_Y*(1-ORIGIN.y);i++) yTick(i);
         for(let i=0;i>=-1*TICK_COUNT_Y*ORIGIN.y; i--) yTick(i);
-
+        var scaleY = y=>(-1*y*(height/LABEL_RANGE_Y))+top+~~(height*ORIGIN.y),
+            scaleX = x=>(x*(width/LABEL_RANGE_X))+left+~~(width*ORIGIN.x),
+            invX   = x=>((~~(width*ORIGIN.x-x-left))*(LABEL_RANGE_X/width));
+        ctx.lineWidth       = FUNC_WIDTH;
+        ctx.strokeStyle     = FUNC_COLOR;
+        ctx.beginPath();
+        ctx.moveTo(left-0.5,scaleY(f(invX(0))));
+        for(let i=left;i<=left+width;i++){
+            console.log(invX(i))
+            ctx.lineTo(i,scaleY(f(invX(i))));
+        }
+        ctx.lineTo(left+width,top+~~(height*ORIGIN.y));
+        ctx.stroke();
     },
     changes: [
         ["g0.1.0.0001","Jul 12, 2018","Initial"],
