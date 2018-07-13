@@ -37,74 +37,67 @@ _g.g = (_g.graph = {
                 x:1-(AXIS_RANGE_X[1]/(AXIS_RANGE_X[1]-AXIS_RANGE_X[0])),
                 y:1-(AXIS_RANGE_Y[1]/(AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0]))
             };
-        function loadAxes(ctx, ticks, labelRanges){
-            //	Calculate Positions
-            var width	        = ctx.canvas.width  - (2*PADDING_LEFT),
-                height          = ctx.canvas.height - (2*PADDING_TOP),
-                left	        = PADDING_LEFT + 0.5,
-                top             = PADDING_TOP  + 0.5;
-            //	Draw Axes
-            ctx.lineWidth       = AXIS_WIDTH;
-            ctx.strokeStyle     = AXIS_COLOR;
-            //  y-axis
+        //	Calculate Positions
+        var width	        = ctx.canvas.width -(2*PADDING_LEFT),
+            height          = ctx.canvas.height-(2*PADDING_TOP),
+            left	        = PADDING_LEFT+0.5,
+            top             = PADDING_TOP +0.5;
+        //	Draw Axes
+        ctx.lineWidth       = AXIS_WIDTH;
+        ctx.strokeStyle     = AXIS_COLOR;
+        //  y-axis
+        ctx.beginPath();
+        ctx.moveTo(left+~~(width*ORIGIN.x),top-0.5);
+        ctx.lineTo(left+~~(width*ORIGIN.x),top+height);
+        ctx.stroke();
+        //  x-axis
+        ctx.beginPath();
+        ctx.moveTo(left-0.5,  top+~~(height*ORIGIN.y));
+        ctx.lineTo(left+width,top+~~(height*ORIGIN.y));
+        ctx.stroke();
+        ctx.lineWidth       = TICK_WIDTH;
+        ctx.strokeStyle     = TICK_COLOR;
+        ctx.font 			= LABEL_FONT;
+        ctx.textAlign		= "center";
+        ctx.textBaseline	= "top";
+        ctx.fillStyle		= LABEL_COLOR;
+        //	Draw x-axis Ticks
+        var xTick = i => {
+            //  Draw tick
             ctx.beginPath();
-            ctx.moveTo(left + ~~(width*ORIGIN.x), top - 0.5);
-            ctx.lineTo(left + ~~(width*ORIGIN.x), top + height);
+            let x = ~~((width/TICK_COUNT_X)*i)+left+~~(width*ORIGIN.x);
+            ctx.moveTo(x,0.5+top+~~(height*ORIGIN.y));
+            ctx.lineTo(x,0.5+top+~~(height*ORIGIN.y)+(
+                i%EXTEND_RATE==0?EXTEND_LENGTH:TICK_LENGTH
+            ));
             ctx.stroke();
-            //  x-axis
+            //	Write label
+            if((i%LABEL_RATE==0||TICK_COUNT_X<LABEL_RATE)&&i!=0)
+                ctx.fillText((i/TICK_COUNT_X)*LABEL_RANGE_X,x,
+                    top+(height*ORIGIN.y)+EXTEND_LENGTH+1);
+        };
+        for(let i=0;i<=TICK_COUNT_X*(1-ORIGIN.x);i++) xTick(i);
+        for(let i=0;i>=-1*TICK_COUNT_X*ORIGIN.x; i--) xTick(i);
+        //	Draw y-axis Ticks
+        ctx.textAlign		= "right";
+        ctx.textBaseline	= "middle";
+        var yTick = i => {
+            // Draw tick
             ctx.beginPath();
-            ctx.moveTo(left - 0.5,   top + ~~(height*ORIGIN.y));
-            ctx.lineTo(left + width, top + ~~(height*ORIGIN.y));
+            let y = ~~((height/TICK_COUNT_Y)*i)+top+~~(height*ORIGIN.y);
+            ctx.moveTo(0.5+left+~~(width*ORIGIN.x),y);
+            ctx.lineTo(0.5+left+~~(width*ORIGIN.x)-(
+                i%EXTEND_RATE==0?EXTEND_LENGTH:TICK_LENGTH
+            ),y);
             ctx.stroke();
-            ctx.lineWidth       = TICK_WIDTH;
-            ctx.strokeStyle     = TICK_COLOR;
-            ctx.font 			= LABEL_FONT;
-            ctx.textAlign		= "center";
-            ctx.textBaseline	= "top";
-            ctx.fillStyle		= LABEL_COLOR;
-            //	Draw x-axis Ticks
-            var xTick = i => {
-                //  Draw tick
-                ctx.beginPath();
-                let x = ~~((width / ticks[0]) * i) + left + ~~(width*ORIGIN.x);
-                ctx.moveTo(x, 0.5 + top + ~~(height*ORIGIN.y));
-                ctx.lineTo(x, 0.5 + top + ~~(height*ORIGIN.y) + (
-                    i % EXTEND_RATE == 0 ? EXTEND_LENGTH : TICK_LENGTH
-                ));
-                ctx.stroke();
-                //	Write label
-                if((i % LABEL_RATE == 0 || ticks[0] < LABEL_RATE) && i != 0)
-                    ctx.fillText((i / ticks[0]) * labelRanges[0], x,
-                        top + (height*ORIGIN.y) + EXTEND_LENGTH + 1);
-            };
-            for(let i = 0; i <= ticks[0]*(1-ORIGIN.x); i++) xTick(i);
-            for(let i = 0; i >= -1*ticks[0]*ORIGIN.x; i--) xTick(i);
-            //	Draw y-axis Ticks
-            ctx.textAlign		= "right";
-            ctx.textBaseline	= "middle";
-            var yTick = i => {
-                // Draw tick
-                ctx.beginPath();
-                let y = ~~((height / ticks[1])*i)+top+~~(height*ORIGIN.y);
-                ctx.moveTo(0.5 + left + ~~(width*ORIGIN.x), y);
-                ctx.lineTo(0.5 + left + ~~(width*ORIGIN.x) - (
-                    i % EXTEND_RATE == 0 ? EXTEND_LENGTH : TICK_LENGTH
-                ), y);
-                ctx.stroke();
-                //	Write label
-                if((i % LABEL_RATE == 0 || ticks[1] < LABEL_RATE) && i != 0)
-                    ctx.fillText((-1 * i / ticks[1]) * labelRanges[1],
-                        left + (width*ORIGIN.x) - EXTEND_LENGTH - 1, y);
-            }
-            for(let i = 0; i <= ticks[1]*(1-ORIGIN.y); i++) yTick(i);
-            for(let i = 0; i >= -1*ticks[1]*ORIGIN.y; i--) yTick(i);
+            //	Write label
+            if((i%LABEL_RATE==0||TICK_COUNT_Y<LABEL_RATE)&&i!=0)
+                ctx.fillText((-1*i/TICK_COUNT_Y)*LABEL_RANGE_Y,
+                    left+(width*ORIGIN.x)-EXTEND_LENGTH-1,y);
         }
-        loadAxes(
-            ctx,
-            [TICK_COUNT_X,TICK_COUNT_Y],
-            [LABEL_RANGE_X,LABEL_RANGE_Y]
-        );
-        console.log(ctx);
+        for(let i=0;i<=TICK_COUNT_Y*(1-ORIGIN.y);i++) yTick(i);
+        for(let i=0;i>=-1*TICK_COUNT_Y*ORIGIN.y; i--) yTick(i);
+
     },
     changes: [
         ["g0.1.0.0001","Jul 12, 2018","Initial"],
@@ -113,6 +106,7 @@ _g.g = (_g.graph = {
         ["g0.1.0.0004","Jul 13, 2018","Fixed non-centered axis ticks"],
         ["g0.1.0.0005","Jul 13, 2018","Replaced origin opt with axis range"],
         ["g0.1.0.0006","Jul 13, 2018","Fixed axis range rendering"],
-        ["g0.1.0.0007","Jul 13, 2018","Cleanup"]
+        ["g0.1.0.0007","Jul 13, 2018","Cleanup"],
+        ["g0.1.0.0008","Jul 13, 2018","Cleanup"]
     ]
 });
