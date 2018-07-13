@@ -30,6 +30,7 @@ _g.g = (_g.graph = {
             LABEL_COLOR     = options.labelColor    || TICK_COLOR,
             LABEL_RANGE_X   = AXIS_RANGE_X[0]-AXIS_RANGE_X[1],
             LABEL_RANGE_Y   = AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1],
+            ROUNDING        = options.labelRounding || 2,
             FUNC_WIDTH      = options.width         || 2,
             FUNC_COLOR      = options.color         || "#f00",
             PADDING         = options.padding       || 0,
@@ -75,8 +76,10 @@ _g.g = (_g.graph = {
             ctx.stroke();
             //	Write label
             if((i%LABEL_RATE==0||TICK_COUNT_X<LABEL_RATE)&&i!=0)
-                ctx.fillText((i/TICK_COUNT_X)*LABEL_RANGE_X,x,
-                    top+(height*ORIGIN.y)+EXTEND_LENGTH+1);
+                ctx.fillText(
+                    (~~((i/TICK_COUNT_X)*LABEL_RANGE_X*(10**ROUNDING)))
+                        /(10**ROUNDING),
+                    x,top+(height*ORIGIN.y)+EXTEND_LENGTH+1);
         };
         for(let i=0;i<=TICK_COUNT_X*(1-ORIGIN.x);i++) xTick(i);
         for(let i=0;i>=-1*TICK_COUNT_X*ORIGIN.x; i--) xTick(i);
@@ -94,7 +97,9 @@ _g.g = (_g.graph = {
             ctx.stroke();
             //	Write label
             if((i%LABEL_RATE==0||TICK_COUNT_Y<LABEL_RATE)&&i!=0)
-                ctx.fillText((-1*i/TICK_COUNT_Y)*LABEL_RANGE_Y,
+                ctx.fillText(
+                    (~~((-1*i/TICK_COUNT_Y)*LABEL_RANGE_Y*(10**ROUNDING)))
+                        /(10**ROUNDING),
                     left+(width*ORIGIN.x)-EXTEND_LENGTH-1,y);
         }
         for(let i=0;i<=TICK_COUNT_Y*(1-ORIGIN.y);i++) yTick(i);
@@ -107,7 +112,6 @@ _g.g = (_g.graph = {
         ctx.beginPath();
         ctx.moveTo(left-0.5,scaleY(f(invX(0))));
         for(let i=left;i<=left+width;i++){
-            console.log(invX(i))
             ctx.lineTo(i,scaleY(f(invX(i))));
         }
         ctx.lineTo(left+width,top+~~(height*ORIGIN.y));
@@ -121,6 +125,7 @@ _g.g = (_g.graph = {
         ["g0.1.0.0005","Jul 13, 2018","Replaced origin opt with axis range"],
         ["g0.1.0.0006","Jul 13, 2018","Fixed axis range rendering"],
         ["g0.1.0.0007","Jul 13, 2018","Cleanup"],
-        ["g0.1.0.0008","Jul 13, 2018","Cleanup"]
+        ["g0.1.0.0008","Jul 13, 2018","Cleanup"],
+        ["g0.1.0.0009","Jul 13, 2018","Added function rendering"]
     ]
 });
