@@ -21,6 +21,8 @@ _g.g = (_g.graph = {
             TICK_LENGTH		= options.tickLength    || 10,
             TICK_WIDTH      = options.tickWidth     || AXIS_WIDTH,
             TICK_COLOR      = options.tickColor     || AXIS_COLOR,
+            TICK_COUNT_X    = options.tickCountX    || 100,
+            TICK_COUNT_Y    = options.tickCountY    || 40,
             EXTEND_LENGTH	= options.extendLength  || 13,
             EXTEND_RATE		= options.extendRate    || 5,
             LABEL_RATE		= options.labelRate     || 10,
@@ -33,12 +35,12 @@ _g.g = (_g.graph = {
                 x:1-(AXIS_RANGE_X[1]/(AXIS_RANGE_X[1]-AXIS_RANGE_X[0])),
                 y:1-(AXIS_RANGE_Y[1]/(AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0]))
             };
-        function loadAxes(ctx, ticks=[100,40], labelMax=[100,40]){
+        function loadAxes(ctx, ticks, labelMax){
             //	Calculate Positions
-                var width	= ctx.canvas.width  - (2*PADDING_LEFT),
-                    height  = ctx.canvas.height - (2*PADDING_TOP),
-                    left	= PADDING_LEFT + 0.5,
-                    top     = PADDING_TOP  + 0.5;
+            var width	        = ctx.canvas.width  - (2*PADDING_LEFT),
+                height          = ctx.canvas.height - (2*PADDING_TOP),
+                left	        = PADDING_LEFT + 0.5,
+                top             = PADDING_TOP  + 0.5;
             //	Draw Axes
             ctx.lineWidth       = AXIS_WIDTH;
             ctx.strokeStyle     = AXIS_COLOR;
@@ -101,7 +103,11 @@ _g.g = (_g.graph = {
                 "width"  : width
             };
         }
-        loadAxes(ctx);
+        loadAxes(
+            ctx,
+            [TICK_COUNT_X,TICK_COUNT_Y],
+            [AXIS_RANGE_X[0]-AXIS_RANGE_X[1],AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1]]
+        );
         console.log(ctx);
     },
     changes: [
@@ -109,6 +115,7 @@ _g.g = (_g.graph = {
         ["g0.1.0.0002","Jul 13, 2018","Shifted axes to origin point."],
         ["g0.1.0.0003","Jul 13, 2018","Set ticks to start at axes"],
         ["g0.1.0.0004","Jul 13, 2018","Fixed non-centered axis ticks"],
-        ["g0.1.0.0005","Jul 13, 2018","Replaced origin opt with axis range"]
+        ["g0.1.0.0005","Jul 13, 2018","Replaced origin opt with axis range"],
+        ["g0.1.0.0006","Jul 13, 2018","Fixed axis range rendering"]
     ]
 });
