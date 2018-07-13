@@ -68,8 +68,8 @@ _g.g = (_g.graph = {
                     ctx.fillText((i / ticks[0]) * labelMax[0], x,
                         top + (height*ORIGIN.y) + EXTEND_LENGTH + 1);
             };
-            for(let i = 0; i <= ticks[0]*ORIGIN.x; i++) xTick(i);
-            for(let i = 0; i >= -1*ticks[0]*(1-ORIGIN.x); i--) xTick(i);
+            for(let i = 0; i <= ticks[0]*(1-ORIGIN.x); i++) xTick(i);
+            for(let i = 0; i >= -1*ticks[0]*ORIGIN.x; i--) xTick(i);
             //	Draw y-axis Ticks
             ctx.textAlign		= "right";
             ctx.textBaseline	= "middle";
@@ -87,8 +87,8 @@ _g.g = (_g.graph = {
                     ctx.fillText((-1 * i / ticks[1]) * labelMax[1],
                         left + (width*ORIGIN.x) - EXTEND_LENGTH - 1, y);
             }
-            for(let i = 0; i <= ticks[1]*ORIGIN.y; i++) yTick(i);
-            for(let i = 0; i >= -1*ticks[1]*(1-ORIGIN.y); i--) yTick(i);
+            for(let i = 0; i <= ticks[1]*(1-ORIGIN.y); i++) yTick(i);
+            for(let i = 0; i >= -1*ticks[1]*ORIGIN.y; i--) yTick(i);
             return {
                 "height" : height,
                 "left"   : left,
@@ -102,6 +102,7 @@ _g.g = (_g.graph = {
     changes: [
         ["g0.1.0.0001","Jul 12, 2018","Initial"],
         ["g0.1.0.0002","Jul 13, 2018","Shifted axes to origin point."],
-        ["g0.1.0.0003","Jul 13, 2018","Set ticks to start at axes"]
+        ["g0.1.0.0003","Jul 13, 2018","Set ticks to start at axes"],
+        ["g0.1.0.0004","Jul 13, 2018","Fixed non-centered axis ticks"]
     ]
 });
