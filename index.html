@@ -19,6 +19,15 @@
         graph.width = rect.width;
         graph.height= rect.height;
         var ctx		= graph.getContext("2d");
-        _g.graph.render(ctx,x=>10*Math.sin(x),{axisRangeX:[-Math.PI,2*Math.PI]});
+        _g.graph.render(
+            ctx,
+            x=>10*Math.sin(1/x),
+            {
+                axisRangeX:[-1*Math.PI,Math.PI],
+                tickCountX:64,
+                extendRateX:4,
+                labelRateX:8
+            }
+        );
     </script>
 </body>

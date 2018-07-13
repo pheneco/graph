@@ -25,7 +25,11 @@ _g.g = (_g.graph = {
             TICK_COUNT_Y    = options.tickCountY    || 40,
             EXTEND_LENGTH	= options.extendLength  || 13,
             EXTEND_RATE		= options.extendRate    || 5,
+            EXTEND_RATE_X   = options.extendRateX   || EXTEND_RATE,
+            EXTEND_RATE_Y   = options.extendRateY   || EXTEND_RATE,
             LABEL_RATE		= options.labelRate     || 10,
+            LABEL_RATE_X    = options.labelRateX    || LABEL_RATE,
+            LABEL_RATE_Y	= options.labelRateY    || LABEL_RATE,
             LABEL_FONT      = options.labelFont     || "13pt 'Roboto'",
             LABEL_COLOR     = options.labelColor    || TICK_COLOR,
             LABEL_RANGE_X   = AXIS_RANGE_X[0]-AXIS_RANGE_X[1],
@@ -71,11 +75,11 @@ _g.g = (_g.graph = {
             let x = ~~((width/TICK_COUNT_X)*i)+left+~~(width*ORIGIN.x);
             ctx.moveTo(x,0.5+top+~~(height*ORIGIN.y));
             ctx.lineTo(x,0.5+top+~~(height*ORIGIN.y)+(
-                i%EXTEND_RATE==0?EXTEND_LENGTH:TICK_LENGTH
+                i%EXTEND_RATE_X==0?EXTEND_LENGTH:TICK_LENGTH
             ));
             ctx.stroke();
             //	Write label
-            if((i%LABEL_RATE==0||TICK_COUNT_X<LABEL_RATE)&&i!=0)
+            if((i%LABEL_RATE_X==0||TICK_COUNT_X<LABEL_RATE_X)&&i!=0)
                 ctx.fillText(
                     (~~((i/TICK_COUNT_X)*LABEL_RANGE_X*(10**ROUNDING)))
                         /(10**ROUNDING),
@@ -92,11 +96,11 @@ _g.g = (_g.graph = {
             let y = ~~((height/TICK_COUNT_Y)*i)+top+~~(height*ORIGIN.y);
             ctx.moveTo(0.5+left+~~(width*ORIGIN.x),y);
             ctx.lineTo(0.5+left+~~(width*ORIGIN.x)-(
-                i%EXTEND_RATE==0?EXTEND_LENGTH:TICK_LENGTH
+                i%EXTEND_RATE_Y==0?EXTEND_LENGTH:TICK_LENGTH
             ),y);
             ctx.stroke();
             //	Write label
-            if((i%LABEL_RATE==0||TICK_COUNT_Y<LABEL_RATE)&&i!=0)
+            if((i%LABEL_RATE_Y==0||TICK_COUNT_Y<LABEL_RATE_Y)&&i!=0)
                 ctx.fillText(
                     (~~((-1*i/TICK_COUNT_Y)*LABEL_RANGE_Y*(10**ROUNDING)))
                         /(10**ROUNDING),
@@ -126,6 +130,8 @@ _g.g = (_g.graph = {
         ["g0.1.0.0006","Jul 13, 2018","Fixed axis range rendering"],
         ["g0.1.0.0007","Jul 13, 2018","Cleanup"],
         ["g0.1.0.0008","Jul 13, 2018","Cleanup"],
-        ["g0.1.0.0009","Jul 13, 2018","Added function rendering"]
+        ["g0.1.0.0009","Jul 13, 2018","Added function rendering"],
+        ["g0.1.0.0010","Jul 13, 2018","Added label rounding"],
+        ["g0.1.0.0011","Jul 13, 2018","Added separate x- and y-axis options"]
     ]
 });
