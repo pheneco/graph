@@ -28,6 +28,8 @@ _g.g = (_g.graph = {
             LABEL_RATE		= options.labelRate     || 10,
             LABEL_FONT      = options.labelFont     || "13pt 'Roboto'",
             LABEL_COLOR     = options.labelColor    || TICK_COLOR,
+            LABEL_RANGE_X   = AXIS_RANGE_X[0]-AXIS_RANGE_X[1],
+            LABEL_RANGE_Y   = AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1],
             PADDING         = options.padding       || 0,
             PADDING_LEFT    = options.paddingLeft   || PADDING,
             PADDING_TOP     = options.paddingTop    || PADDING,
@@ -35,7 +37,7 @@ _g.g = (_g.graph = {
                 x:1-(AXIS_RANGE_X[1]/(AXIS_RANGE_X[1]-AXIS_RANGE_X[0])),
                 y:1-(AXIS_RANGE_Y[1]/(AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0]))
             };
-        function loadAxes(ctx, ticks, labelMax){
+        function loadAxes(ctx, ticks, labelRanges){
             //	Calculate Positions
             var width	        = ctx.canvas.width  - (2*PADDING_LEFT),
                 height          = ctx.canvas.height - (2*PADDING_TOP),
@@ -72,7 +74,7 @@ _g.g = (_g.graph = {
                 ctx.stroke();
                 //	Write label
                 if((i % LABEL_RATE == 0 || ticks[0] < LABEL_RATE) && i != 0)
-                    ctx.fillText((i / ticks[0]) * labelMax[0], x,
+                    ctx.fillText((i / ticks[0]) * labelRanges[0], x,
                         top + (height*ORIGIN.y) + EXTEND_LENGTH + 1);
             };
             for(let i = 0; i <= ticks[0]*(1-ORIGIN.x); i++) xTick(i);
@@ -91,22 +93,16 @@ _g.g = (_g.graph = {
                 ctx.stroke();
                 //	Write label
                 if((i % LABEL_RATE == 0 || ticks[1] < LABEL_RATE) && i != 0)
-                    ctx.fillText((-1 * i / ticks[1]) * labelMax[1],
+                    ctx.fillText((-1 * i / ticks[1]) * labelRanges[1],
                         left + (width*ORIGIN.x) - EXTEND_LENGTH - 1, y);
             }
             for(let i = 0; i <= ticks[1]*(1-ORIGIN.y); i++) yTick(i);
             for(let i = 0; i >= -1*ticks[1]*ORIGIN.y; i--) yTick(i);
-            return {
-                "height" : height,
-                "left"   : left,
-                "top"    : top,
-                "width"  : width
-            };
         }
         loadAxes(
             ctx,
             [TICK_COUNT_X,TICK_COUNT_Y],
-            [AXIS_RANGE_X[0]-AXIS_RANGE_X[1],AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1]]
+            [LABEL_RANGE_X,LABEL_RANGE_Y]
         );
         console.log(ctx);
     },
@@ -116,6 +112,7 @@ _g.g = (_g.graph = {
         ["g0.1.0.0003","Jul 13, 2018","Set ticks to start at axes"],
         ["g0.1.0.0004","Jul 13, 2018","Fixed non-centered axis ticks"],
         ["g0.1.0.0005","Jul 13, 2018","Replaced origin opt with axis range"],
-        ["g0.1.0.0006","Jul 13, 2018","Fixed axis range rendering"]
+        ["g0.1.0.0006","Jul 13, 2018","Fixed axis range rendering"],
+        ["g0.1.0.0007","Jul 13, 2018","Cleanup"]
     ]
 });
