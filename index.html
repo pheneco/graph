@@ -2,9 +2,7 @@
 	<head>
 		<title>_g.graph test</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-		<link href="https://fonts.googleapis.com/css?family=Droid+Serif:400i,700i|Roboto:400|Material+Icons" rel="stylesheet">
 		<style>
-			*						{font-size:13pt;font-family:'Roboto',sans-serif;}
 			html					{color:#333;background:#fff;}
 			sup, sub				{font-size:6pt;}
 			#graph					{height:100%;left:0;position:absolute;top:0;width:100%;}
@@ -22,6 +20,7 @@
         _g.graph.render(
             ctx,
             x=>10*Math.sin(1/x),
+			//x=>5*Math.sin((x*5)**3)*Math.sin(x*5),
             {
                 axisRangeX:[-1*Math.PI,Math.PI],
                 tickCountX:64,

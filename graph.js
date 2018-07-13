@@ -30,13 +30,15 @@ _g.g = (_g.graph = {
             LABEL_RATE		= options.labelRate     || 10,
             LABEL_RATE_X    = options.labelRateX    || LABEL_RATE,
             LABEL_RATE_Y	= options.labelRateY    || LABEL_RATE,
-            LABEL_FONT      = options.labelFont     || "13pt 'Roboto'",
+            LABEL_FONT      = options.labelFont     || "13pt sans-serif",
             LABEL_COLOR     = options.labelColor    || TICK_COLOR,
             LABEL_RANGE_X   = AXIS_RANGE_X[0]-AXIS_RANGE_X[1],
             LABEL_RANGE_Y   = AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1],
             ROUNDING        = options.labelRounding || 2,
             FUNC_WIDTH      = options.width         || 2,
             FUNC_COLOR      = options.color         || "#f00",
+            SAMPLES         = options.samples       || 3,
+            SAMPLE_SIZE     = options.sampleSize    || 0.5,
             PADDING         = options.padding       || 0,
             PADDING_LEFT    = options.paddingLeft   || PADDING,
             PADDING_TOP     = options.paddingTop    || PADDING,
@@ -45,10 +47,44 @@ _g.g = (_g.graph = {
                 y:1-(AXIS_RANGE_Y[1]/(AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0]))
             };
         //	Calculate Positions
-        var width	        = ctx.canvas.width -(2*PADDING_LEFT),
-            height          = ctx.canvas.height-(2*PADDING_TOP),
-            left	        = PADDING_LEFT+0.5,
-            top             = PADDING_TOP +0.5;
+        var width  = ctx.canvas.width -(2*PADDING_LEFT),
+            height = ctx.canvas.height-(2*PADDING_TOP),
+            left   = PADDING_LEFT+0.5,
+            top    = PADDING_TOP +0.5;
+            scaleY = y=>(-1*y*(height/LABEL_RANGE_Y))+top+~~(height*ORIGIN.y),
+            scaleX = x=>(x*(width/LABEL_RANGE_X))+left+~~(width*ORIGIN.x),
+            invY   = y=>(((height*ORIGIN.y-y-top))*(LABEL_RANGE_Y/height)),
+            invX   = x=>(((width*ORIGIN.x-x-left))*(LABEL_RANGE_X/width));
+        //  based on
+        //  https://gist.github.com/biovisualize/5400576
+        //  http://blog.hvidtfeldts.net/index.php/ ...
+        //  ... 2011/07/plotting-high-frequency-functions-using-a-gpu/
+        var img  = ctx.getImageData(0,0,width,height),
+            buf  = new ArrayBuffer(img.data.length),
+            buf8 = new Uint8ClampedArray(buf),
+            data = new Uint32Array(buf);
+        for(let y=0;y<height;++y)
+            for(let x=0;x<width;++x){
+                let count  = 0,
+                    samples = 0;
+            	for(let i=0;i<SAMPLES;i++)
+            		for(let j=0;j<SAMPLES;j++){
+            			if (i*i+j*j>SAMPLES**2) continue;
+            			samples++;
+            			let val = f(invX(x+i*SAMPLE_SIZE))-invY(y+j*SAMPLE_SIZE);
+            			count += val>0?1:-1;
+            		}
+                let a = (Math.abs(count)/(SAMPLES**2))*255;
+                //let a = count>0?255:0;
+                if(!(x%100)&&!(y%100))console.log(a)
+                data[y*width+x] =
+                    (255-a << 24) | // alpha
+                    (0     << 16) | // blue
+                    (0     <<  8) | // green
+                     255;             // red
+            }
+        img.data.set(buf8);
+        ctx.putImageData(img,PADDING_LEFT,PADDING_TOP);
         //	Draw Axes
         ctx.lineWidth       = AXIS_WIDTH;
         ctx.strokeStyle     = AXIS_COLOR;
@@ -108,18 +144,6 @@ _g.g = (_g.graph = {
         }
         for(let i=0;i<=TICK_COUNT_Y*(1-ORIGIN.y);i++) yTick(i);
         for(let i=0;i>=-1*TICK_COUNT_Y*ORIGIN.y; i--) yTick(i);
-        var scaleY = y=>(-1*y*(height/LABEL_RANGE_Y))+top+~~(height*ORIGIN.y),
-            scaleX = x=>(x*(width/LABEL_RANGE_X))+left+~~(width*ORIGIN.x),
-            invX   = x=>((~~(width*ORIGIN.x-x-left))*(LABEL_RANGE_X/width));
-        ctx.lineWidth       = FUNC_WIDTH;
-        ctx.strokeStyle     = FUNC_COLOR;
-        ctx.beginPath();
-        ctx.moveTo(left-0.5,scaleY(f(invX(0))));
-        for(let i=left;i<=left+width;i++){
-            ctx.lineTo(i,scaleY(f(invX(i))));
-        }
-        ctx.lineTo(left+width,top+~~(height*ORIGIN.y));
-        ctx.stroke();
     },
     changes: [
         ["g0.1.0.0001","Jul 12, 2018","Initial"],
@@ -132,6 +156,7 @@ _g.g = (_g.graph = {
         ["g0.1.0.0008","Jul 13, 2018","Cleanup"],
         ["g0.1.0.0009","Jul 13, 2018","Added function rendering"],
         ["g0.1.0.0010","Jul 13, 2018","Added label rounding"],
-        ["g0.1.0.0011","Jul 13, 2018","Added separate x- and y-axis options"]
+        ["g0.1.0.0011","Jul 13, 2018","Added separate x- and y-axis options"],
+        ["g0.1.0.0012","Jul 13, 2018","Changed function rending to pixel based"]
     ]
 });
