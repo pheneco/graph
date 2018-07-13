@@ -16,6 +16,8 @@ _g.g = (_g.graph = {
         const
             AXIS_WIDTH      = options.axisWidth     || 1,
             AXIS_COLOR      = options.axisColor     || "#333",
+            AXIS_RANGE_X    = options.axisRangeX    || [-50,50],
+            AXIS_RANGE_Y    = options.axisRangeY    || [-20,20],
             TICK_LENGTH		= options.tickLength    || 10,
             TICK_WIDTH      = options.tickWidth     || AXIS_WIDTH,
             TICK_COLOR      = options.tickColor     || AXIS_COLOR,
@@ -27,7 +29,10 @@ _g.g = (_g.graph = {
             PADDING         = options.padding       || 0,
             PADDING_LEFT    = options.paddingLeft   || PADDING,
             PADDING_TOP     = options.paddingTop    || PADDING,
-            ORIGIN          = options.origin        || {x:0.5,y:0.5};
+            ORIGIN          = {
+                x:1-(AXIS_RANGE_X[1]/(AXIS_RANGE_X[1]-AXIS_RANGE_X[0])),
+                y:1-(AXIS_RANGE_Y[1]/(AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0]))
+            };
         function loadAxes(ctx, ticks=[100,40], labelMax=[100,40]){
             //	Calculate Positions
                 var width	= ctx.canvas.width  - (2*PADDING_LEFT),
@@ -103,6 +108,7 @@ _g.g = (_g.graph = {
         ["g0.1.0.0001","Jul 12, 2018","Initial"],
         ["g0.1.0.0002","Jul 13, 2018","Shifted axes to origin point."],
         ["g0.1.0.0003","Jul 13, 2018","Set ticks to start at axes"],
-        ["g0.1.0.0004","Jul 13, 2018","Fixed non-centered axis ticks"]
+        ["g0.1.0.0004","Jul 13, 2018","Fixed non-centered axis ticks"],
+        ["g0.1.0.0005","Jul 13, 2018","Replaced origin opt with axis range"]
     ]
 });
