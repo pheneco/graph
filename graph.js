@@ -52,10 +52,10 @@ _g.g = (_g.graph = {
                 height = ctx.canvas.height-(2*PADDING_TOP),
                 left   = PADDING_LEFT+0.5,
                 top    = PADDING_TOP +0.5;
-                scaleY = y=>(-y*(height/LABEL_RANGE_Y))+top+~~(height*origin.y),
-                scaleX = x=>(x*(width/LABEL_RANGE_X))+left+~~(width*origin.x),
-                invY   = y=>(((height*origin.y-y-top))*(LABEL_RANGE_Y/height)),
-                invX   = x=>(((width*origin.x-x-left))*(LABEL_RANGE_X/width));
+                scaleY = y=>height*((-y/LABEL_RANGE_Y)+origin.y)+top,
+                scaleX = x=>width*((x/LABEL_RANGE_X)+origin.x)+left,
+                invY   = y=>(origin.y-(y-top)/height)*LABEL_RANGE_Y,
+                invX   = x=>(origin.x-(x-left)/width)*LABEL_RANGE_X;
             //  based on
             //  https://gist.github.com/biovisualize/5400576
             //  http://blog.hvidtfeldts.net/index.php/ ...
@@ -63,16 +63,18 @@ _g.g = (_g.graph = {
             var img  = ctx.getImageData(0,0,width,height),
                 buf  = new ArrayBuffer(img.data.length),
                 buf8 = new Uint8ClampedArray(buf),
-                data = new Uint32Array(buf);
+                data = new Uint32Array(buf),
+                samsq = SAMPLES**2;
             for(let y=0;y<height;++y)
             for(let x=0;x<width;++x){
-                let count = 0;
-            	for(let i=-SAMPLES/2;i<SAMPLES/2;i++)
-        		for(let j=-SAMPLES/2;j<SAMPLES/2;j++){
+                let count = 0,
+                    hs = SAMPLES/2;
+            	for(let i=-hs;i<hs;++i)
+        		for(let j=-hs;j<hs;++j){
         			let v = f(invX(x+i*SAMPLE_SIZE))-invY(y+j*SAMPLE_SIZE);
         			count+= v>0?1:-1;
         		}
-                let a = (Math.abs(count)/(SAMPLES**2))*255;
+                let a = (Math.abs(count)/samsq)*255;
                 //let a = count>0?255:0;
                 data[y*width+x] =
                     (255<<24)|// alpha
@@ -195,6 +197,7 @@ changes: [
     ["g0.1.0.0012","Jul 13, 2018","Changed function rending to pixel based"],
     ["g0.1.0.0013","Jul 13, 2018","Removed transparency in rendering"],
     ["g0.1.0.0014","Jul 13, 2018","Adjusted default sampling"],
-    ["g0.1.0.0015","Jul 13, 2018","Added mouse dragging"]
+    ["g0.1.0.0015","Jul 13, 2018","Added mouse dragging"],
+    ["g0.1.0.0016","Jul 13, 2018","Cleanup/optimization"]
 ]
 });
