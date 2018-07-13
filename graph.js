@@ -78,10 +78,10 @@ _g.g = (_g.graph = {
                 //let a = count>0?255:0;
                 if(!(x%100)&&!(y%100))console.log(a)
                 data[y*width+x] =
-                    (255-a << 24) | // alpha
-                    (0     << 16) | // blue
-                    (0     <<  8) | // green
-                     255;             // red
+                    (255<<24)|// alpha
+                    (a  <<16)|// blue
+                    (a  << 8)|// green
+                    (255<< 0);// red
             }
         img.data.set(buf8);
         ctx.putImageData(img,PADDING_LEFT,PADDING_TOP);
@@ -157,6 +157,7 @@ _g.g = (_g.graph = {
         ["g0.1.0.0009","Jul 13, 2018","Added function rendering"],
         ["g0.1.0.0010","Jul 13, 2018","Added label rounding"],
         ["g0.1.0.0011","Jul 13, 2018","Added separate x- and y-axis options"],
-        ["g0.1.0.0012","Jul 13, 2018","Changed function rending to pixel based"]
+        ["g0.1.0.0012","Jul 13, 2018","Changed function rending to pixel based"],
+        ["g0.1.0.0013","Jul 13, 2018","Removed transparency in rendering"]
     ]
 });
