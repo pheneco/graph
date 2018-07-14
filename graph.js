@@ -35,7 +35,7 @@ _g.g = (_g.graph = {
             LABEL_RANGE_X   = AXIS_RANGE_X[0]-AXIS_RANGE_X[1],
             LABEL_RANGE_Y   = AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1],
             ROUNDING        = options.labelRounding || 2,
-            FUNC_WIDTH      = options.width         || 2,
+            FUNC_WIDTH      = options.width         || 1,
             FUNC_COLOR      = options.color         || "#f00",
             PADDING         = options.padding       || 0,
             PADDING_LEFT    = options.paddingLeft   || PADDING,
@@ -46,7 +46,7 @@ _g.g = (_g.graph = {
                 x:1-(AXIS_RANGE_X[1]/(AXIS_RANGE_X[1]-AXIS_RANGE_X[0])),
                 y:1-(AXIS_RANGE_Y[1]/(AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0]))
             };
-        function draw(origin){
+        function draw(origin,quick=false){
             //	Calculate Positions
             var width  = ctx.canvas.width -(2*PADDING_LEFT),
                 height = ctx.canvas.height-(2*PADDING_TOP),
@@ -56,34 +56,46 @@ _g.g = (_g.graph = {
                 scaleX = x=>width*((x/LABEL_RANGE_X)+origin.x)+left,
                 invY   = y=>(origin.y-(y-top)/height)*LABEL_RANGE_Y,
                 invX   = x=>(origin.x-(x-left)/width)*LABEL_RANGE_X;
-            //  based on
-            //  https://gist.github.com/biovisualize/5400576
-            //  http://blog.hvidtfeldts.net/index.php/ ...
-            //  ... 2011/07/plotting-high-frequency-functions-using-a-gpu/
-            var img  = ctx.getImageData(0,0,width,height),
-                buf  = new ArrayBuffer(img.data.length),
-                buf8 = new Uint8ClampedArray(buf),
-                data = new Uint32Array(buf),
-                samsq = SAMPLES**2;
-            for(let y=0;y<height;++y)
-            for(let x=0;x<width;++x){
-                let count = 0,
-                    hs = SAMPLES/2;
-            	for(let i=-hs;i<hs;++i)
-        		for(let j=-hs;j<hs;++j){
-        			let v = f(invX(x+i*SAMPLE_SIZE))-invY(y+j*SAMPLE_SIZE);
-        			count+= v>0?1:-1;
-        		}
-                let a = (Math.abs(count)/samsq)*255;
-                //let a = count>0?255:0;
-                data[y*width+x] =
-                    (255<<24)|// alpha
-                    (a  <<16)|// blue
-                    (a  << 8)|// green
-                    (255<< 0);// red
+            ctx.clearRect(PADDING_LEFT,PADDING_TOP,width,height);
+            if(quick){
+                ctx.lineWidth       = FUNC_WIDTH;
+                ctx.strokeStyle     = FUNC_COLOR;
+                ctx.beginPath();
+                ctx.moveTo(left-0.5,scaleY(f(invX(0))));
+                for(let i=left;i<=left+width;i++){
+                    ctx.lineTo(i,scaleY(f(invX(i))));
+                }
+                ctx.stroke();
+            } else {
+                //  based on
+                //  https://gist.github.com/biovisualize/5400576
+                //  http://blog.hvidtfeldts.net/index.php/ ...
+                //  ... 2011/07/plotting-high-frequency-functions-using-a-gpu/
+                var img  = ctx.getImageData(0,0,width,height),
+                    buf  = new ArrayBuffer(img.data.length),
+                    buf8 = new Uint8ClampedArray(buf),
+                    data = new Uint32Array(buf),
+                    samsq = SAMPLES**2;
+                for(let y=0;y<height;++y)
+                for(let x=0;x<width;++x){
+                    let count = 0,
+                        hs = SAMPLES/2;
+                	for(let i=-hs;i<hs;++i)
+            		for(let j=-hs;j<hs;++j){
+            			let v = f(invX(x+i*SAMPLE_SIZE))-invY(y+j*SAMPLE_SIZE);
+            			count+= v>0?1:-1;
+            		}
+                    let a = (Math.abs(count)/samsq)*255;
+                    //let a = count>0?255:0;
+                    data[y*width+x] =
+                        (255<<24)|// alpha
+                        (a  <<16)|// blue
+                        (a  << 8)|// green
+                        (255<< 0);// red
+                }
+                img.data.set(buf8);
+                ctx.putImageData(img,PADDING_LEFT,PADDING_TOP);
             }
-            img.data.set(buf8);
-            ctx.putImageData(img,PADDING_LEFT,PADDING_TOP);
             //	Draw Axes
             ctx.lineWidth       = AXIS_WIDTH;
             ctx.strokeStyle     = AXIS_COLOR;
@@ -149,9 +161,6 @@ _g.g = (_g.graph = {
         ctx.canvas.addEventListener("mousedown",e=>{
             window.graph_drag_position = {x:e.pageX,y:e.pageY};
             window.graph_drag_active = true;
-            window.graph_drag_temp = [SAMPLES,SAMPLE_SIZE];
-            SAMPLES = 2;
-            SAMPLE_SIZE = 1;
         });
         ctx.canvas.addEventListener("mousemove",e=>{
             if(graph_drag_active){
@@ -161,7 +170,7 @@ _g.g = (_g.graph = {
                 draw({
                     x:graph_drag_origin.x + dx,
                     y:graph_drag_origin.y + dy
-                });
+                },true);
             }
         });
         ctx.canvas.addEventListener("mouseup",e=>{
@@ -173,8 +182,6 @@ _g.g = (_g.graph = {
                     x:graph_drag_origin.x + dx,
                     y:graph_drag_origin.y + dy
                 };
-                SAMPLES = graph_drag_temp[0];
-                SAMPLE_SIZE = graph_drag_temp[1];
                 draw(graph_drag_origin);
                 window.graph_drag_active = false;
             }
@@ -198,6 +205,7 @@ changes: [
     ["g0.1.0.0013","Jul 13, 2018","Removed transparency in rendering"],
     ["g0.1.0.0014","Jul 13, 2018","Adjusted default sampling"],
     ["g0.1.0.0015","Jul 13, 2018","Added mouse dragging"],
-    ["g0.1.0.0016","Jul 13, 2018","Cleanup/optimization"]
+    ["g0.1.0.0016","Jul 13, 2018","Cleanup/optimization"],
+    ["g0.1.0.0017","Jul 13, 2018","Use quick draw method when dragging"]
 ]
 });
