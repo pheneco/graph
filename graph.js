@@ -12,6 +12,14 @@ if(typeof Graphene!=='object'){
 }
 
 _g.g = (_g.graph = {
+	hxr(h){ // from phene.co/color
+		if(h.charAt(0)=="#") h = h.substring(1,7);
+		return [
+			(parseInt(h.substring(0,2),16)),
+			(parseInt(h.substring(2,4),16)),
+			(parseInt(h.substring(4,6),16))
+		]
+	},
     render(ctx,f,options){
         const
             AXIS_WIDTH      = options.axisWidth     || 1,
@@ -36,7 +44,7 @@ _g.g = (_g.graph = {
             LABEL_RANGE_Y   = AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0],
             ROUNDING        = options.labelRounding || 2,
             FUNC_WIDTH      = options.width         || 1,
-            FUNC_COLOR      = options.color         || "#f00",
+            FUNC_COLOR      = options.color         || "#ff0000",
             PADDING         = options.padding       || 0,
             PADDING_LEFT    = options.paddingLeft   || PADDING,
             PADDING_TOP     = options.paddingTop    || PADDING;
@@ -75,7 +83,9 @@ _g.g = (_g.graph = {
                     buf  = new ArrayBuffer(img.data.length),
                     buf8 = new Uint8ClampedArray(buf),
                     data = new Uint32Array(buf),
-                    samsq = SAMPLES**2;
+                    samsq = SAMPLES**2,
+					rgb = _g.g.hxr(FUNC_COLOR),
+					bgc = [255,255,255];
                 for(let y=0;y<height;++y)
                 for(let x=0;x<width;++x){
                     let count = 0,
@@ -85,13 +95,14 @@ _g.g = (_g.graph = {
             			let v = f(invX(x+i*SAMPLE_SIZE))-invY(y+j*SAMPLE_SIZE);
             			count+= v>0?1:-1;
             		}
-                    let a = (Math.abs(count)/samsq)*255;
+                    let a = 1-(Math.abs(count)/samsq),
+						b = n=>bgc[n]+(a*(rgb[n]-bgc[n]));
                     //let a = count>0?255:0;
                     data[y*width+x] =
-                        (255<<24)|// alpha
-                        (a  <<16)|// blue
-                        (a  << 8)|// green
-                        (255<< 0);// red
+                        (255 <<24)|// alpha
+                        (b(2)<<16)|// blue
+                        (b(1)<< 8)|// green
+                        (b(0)<< 0);// red
                 }
                 img.data.set(buf8);
                 ctx.putImageData(img,PADDING_LEFT,PADDING_TOP);
@@ -209,6 +220,7 @@ changes: [
 	["g0.1.0.0017","Jul 13, 2018","Use quick draw method when dragging"],
 	["g0.1.0.0018","Jul 21, 2018","Fixed y-axis inversion in fast rendering"],
 	["g0.1.0.0019","Jul 21, 2018","Fixed x- and y-axis label negation"],
-    ["g0.1.0.0020","Jul 21, 2018","Fixed y-axis inversion"]
+	["g0.1.0.0020","Jul 21, 2018","Fixed y-axis inversion"],
+    ["g0.1.0.0021","Jul 21, 2018","Added color option to slow renderer"]
 ]
 });
