@@ -128,7 +128,7 @@ _g.g = (_g.graph = {
                 //	Write label
                 if((i%LABEL_RATE_X==0||TICK_COUNT_X<LABEL_RATE_X)&&i!=0)
                     ctx.fillText(
-                        (~~((i/TICK_COUNT_X)*LABEL_RANGE_X*(10**ROUNDING)))
+                        (-~~((i/TICK_COUNT_X)*LABEL_RANGE_X*(10**ROUNDING)))
                             /(10**ROUNDING),
                         x,top+(height*origin.y)+EXTEND_LENGTH+1);
             };
@@ -149,7 +149,7 @@ _g.g = (_g.graph = {
                 //	Write label
                 if((i%LABEL_RATE_Y==0||TICK_COUNT_Y<LABEL_RATE_Y)&&i!=0)
                     ctx.fillText(
-                        (~~((-1*i/TICK_COUNT_Y)*LABEL_RANGE_Y*(10**ROUNDING)))
+                        (~~((i/TICK_COUNT_Y)*LABEL_RANGE_Y*(10**ROUNDING)))
                             /(10**ROUNDING),
                         left+(width*origin.x)-EXTEND_LENGTH-1,y);
             }
@@ -207,6 +207,7 @@ changes: [
     ["g0.1.0.0015","Jul 13, 2018","Added mouse dragging"],
     ["g0.1.0.0016","Jul 13, 2018","Cleanup/optimization"],
 	["g0.1.0.0017","Jul 13, 2018","Use quick draw method when dragging"],
-    ["g0.1.0.0018","Jul 21, 2018","Fixed y-axis inversion in fast rendering"]
+	["g0.1.0.0018","Jul 21, 2018","Fixed y-axis inversion in fast rendering"],
+    ["g0.1.0.0019","Jul 21, 2018","Fixed x- and y-axis label negation"]
 ]
 });
