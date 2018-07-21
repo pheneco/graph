@@ -52,7 +52,7 @@ _g.g = (_g.graph = {
                 height = ctx.canvas.height-(2*PADDING_TOP),
                 left   = PADDING_LEFT+0.5,
                 top    = PADDING_TOP +0.5;
-                scaleY = y=>height*((-y/LABEL_RANGE_Y)+origin.y)+top,
+                scaleY = y=>height*((y/LABEL_RANGE_Y)+origin.y)+top,
                 scaleX = x=>width*((x/LABEL_RANGE_X)+origin.x)+left,
                 invY   = y=>(origin.y-(y-top)/height)*LABEL_RANGE_Y,
                 invX   = x=>(origin.x-(x-left)/width)*LABEL_RANGE_X;
@@ -206,6 +206,7 @@ changes: [
     ["g0.1.0.0014","Jul 13, 2018","Adjusted default sampling"],
     ["g0.1.0.0015","Jul 13, 2018","Added mouse dragging"],
     ["g0.1.0.0016","Jul 13, 2018","Cleanup/optimization"],
-    ["g0.1.0.0017","Jul 13, 2018","Use quick draw method when dragging"]
+	["g0.1.0.0017","Jul 13, 2018","Use quick draw method when dragging"],
+    ["g0.1.0.0018","Jul 21, 2018","Fixed y-axis inversion in fast rendering"]
 ]
 });
