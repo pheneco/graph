@@ -32,8 +32,8 @@ _g.g = (_g.graph = {
             LABEL_RATE_Y	= options.labelRateY    || LABEL_RATE,
             LABEL_FONT      = options.labelFont     || "13pt sans-serif",
             LABEL_COLOR     = options.labelColor    || TICK_COLOR,
-            LABEL_RANGE_X   = AXIS_RANGE_X[0]-AXIS_RANGE_X[1],
-            LABEL_RANGE_Y   = AXIS_RANGE_Y[0]-AXIS_RANGE_Y[1],
+            LABEL_RANGE_X   = AXIS_RANGE_X[1]-AXIS_RANGE_X[0],
+            LABEL_RANGE_Y   = AXIS_RANGE_Y[1]-AXIS_RANGE_Y[0],
             ROUNDING        = options.labelRounding || 2,
             FUNC_WIDTH      = options.width         || 1,
             FUNC_COLOR      = options.color         || "#f00",
@@ -52,7 +52,7 @@ _g.g = (_g.graph = {
                 height = ctx.canvas.height-(2*PADDING_TOP),
                 left   = PADDING_LEFT+0.5,
                 top    = PADDING_TOP +0.5;
-                scaleY = y=>height*((y/LABEL_RANGE_Y)+origin.y)+top,
+                scaleY = y=>height*((-y/LABEL_RANGE_Y)+origin.y)+top,
                 scaleX = x=>width*((x/LABEL_RANGE_X)+origin.x)+left,
                 invY   = y=>(origin.y-(y-top)/height)*LABEL_RANGE_Y,
                 invX   = x=>(origin.x-(x-left)/width)*LABEL_RANGE_X;
@@ -128,12 +128,12 @@ _g.g = (_g.graph = {
                 //	Write label
                 if((i%LABEL_RATE_X==0||TICK_COUNT_X<LABEL_RATE_X)&&i!=0)
                     ctx.fillText(
-                        (-~~((i/TICK_COUNT_X)*LABEL_RANGE_X*(10**ROUNDING)))
+                        (~~((i/TICK_COUNT_X)*LABEL_RANGE_X*(10**ROUNDING)))
                             /(10**ROUNDING),
                         x,top+(height*origin.y)+EXTEND_LENGTH+1);
             };
             for(let i=0;i<=TICK_COUNT_X*(1-origin.x);i++) xTick(i);
-            for(let i=0;i>=-1*TICK_COUNT_X*origin.x; i--) xTick(i);
+            for(let i=0;i>=-TICK_COUNT_X*origin.x; i--) xTick(i);
             //	Draw y-axis Ticks
             ctx.textAlign		= "right";
             ctx.textBaseline	= "middle";
@@ -149,12 +149,12 @@ _g.g = (_g.graph = {
                 //	Write label
                 if((i%LABEL_RATE_Y==0||TICK_COUNT_Y<LABEL_RATE_Y)&&i!=0)
                     ctx.fillText(
-                        (~~((i/TICK_COUNT_Y)*LABEL_RANGE_Y*(10**ROUNDING)))
+                        (-~~((i/TICK_COUNT_Y)*LABEL_RANGE_Y*(10**ROUNDING)))
                             /(10**ROUNDING),
                         left+(width*origin.x)-EXTEND_LENGTH-1,y);
             }
             for(let i=0;i<=TICK_COUNT_Y*(1-origin.y);i++) yTick(i);
-            for(let i=0;i>=-1*TICK_COUNT_Y*origin.y; i--) yTick(i);
+            for(let i=0;i>=-TICK_COUNT_Y*origin.y; i--) yTick(i);
         }
         window.graph_drag_active = false;
         window.graph_drag_origin = origin;
@@ -208,6 +208,7 @@ changes: [
     ["g0.1.0.0016","Jul 13, 2018","Cleanup/optimization"],
 	["g0.1.0.0017","Jul 13, 2018","Use quick draw method when dragging"],
 	["g0.1.0.0018","Jul 21, 2018","Fixed y-axis inversion in fast rendering"],
-    ["g0.1.0.0019","Jul 21, 2018","Fixed x- and y-axis label negation"]
+	["g0.1.0.0019","Jul 21, 2018","Fixed x- and y-axis label negation"],
+    ["g0.1.0.0020","Jul 21, 2018","Fixed y-axis inversion"]
 ]
 });
