@@ -84,8 +84,8 @@ _g.g = (_g.graph = {
                     buf8 = new Uint8ClampedArray(buf),
                     data = new Uint32Array(buf),
                     samsq = SAMPLES**2,
-					rgb = _g.g.hxr(FUNC_COLOR),
-					bgc = [255,255,255];
+					rgb = _g.g.hxr(FUNC_COLOR), // function color
+					bgc = [255,255,255]; // background color
                 for(let y=0;y<height;++y)
                 for(let x=0;x<width;++x){
                     let count = 0,
@@ -96,8 +96,8 @@ _g.g = (_g.graph = {
             			count+= v>0?1:-1;
             		}
                     let a = 1-(Math.abs(count)/samsq),
+						// Interpolate rgb and bgc
 						b = n=>bgc[n]+(a*(rgb[n]-bgc[n]));
-                    //let a = count>0?255:0;
                     data[y*width+x] =
                         (255 <<24)|// alpha
                         (b(2)<<16)|// blue
