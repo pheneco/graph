@@ -1,34 +1,50 @@
 <html>
-	<head>
-		<title>_g.graph test</title>
-		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-		<style>
-			html					{color:#333;background:#fff;}
-			sup, sub				{font-size:6pt;}
-			#graph					{height:100%;left:0;position:absolute;top:0;width:100%;}
-		</style>
+
+<head>
+  <title>_g.graph test</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <style>
+    html {
+      color: #333;
+      background: #fff;
+    }
+
+    sup,
+    sub {
+      font-size: 6pt;
+    }
+
+    #graph {
+      height: 100%;
+      left: 0;
+      position: absolute;
+      top: 0;
+      width: 100%;
+    }
+  </style>
 </head>
+
 <body>
-	<canvas id="graph"></canvas>
-    <script src="graph.js"></script>
-	<script>
-        var graph	= document.getElementById("graph"),
-            rect 	= graph.getBoundingClientRect();
-        graph.width = rect.width;
-        graph.height= rect.height;
-        var ctx		= graph.getContext("2d");
-        _g.graph.render(
-            ctx,
-			x=>x**2,
-        	//x=>10*Math.sin(1/x),
-			//x=>5*Math.sin((x*5)**3)*Math.sin(x*5),
-            {
-                axisRangeX:[-1*Math.PI,Math.PI],
-                tickCountX:64,
-                extendRateX:4,
-                labelRateX:8,
-				color:"#3366dd"
-            }
-        );
-    </script>
+  <canvas id="graph"></canvas>
+  <script src="graph.js"></script>
+  <script>
+    var graph = document.getElementById("graph"),
+      rect = graph.getBoundingClientRect();
+    graph.width = rect.width;
+    graph.height = rect.height;
+    var ctx = graph.getContext("2d");
+    _g.graph.render(
+      ctx,
+      // x => x ** 2,
+      x => 10 * Math.sin(1 / x),
+      // x => 5 * Math.sin((x * 5) ** 3) * Math.sin(x * 5),
+      {
+        axisRangeX: [-1 * Math.PI, Math.PI],
+        tickCountX: 64,
+        extendRateX: 4,
+        labelRateX: 8,
+        color: "#3366dd"
+      }
+    );
+  </script>
 </body>
